@@ -1,0 +1,41 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/skills
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzQ3NjM4OSwiZXhwIjoxNzYzNTYyNzg5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.eFDEimNb9nggllT7Qal0WI55pQIUSJ6x_PBEWtHY-dE
+
+### CREATE SKILL
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name":"TS"
+}
+
+### GET ALL SKILLS
+GET {{baseURL}}/{{urlPath}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET SKILL
+GET {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE SKILL BY ID
+PATCH {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name": "French"
+}
+
+### DELETE SKILL BY ID
+DELETE {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

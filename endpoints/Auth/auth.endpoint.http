@@ -1,0 +1,37 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1
+@accessToken = 
+
+### SIGN IN
+POST {{baseURL}}/{{urlPath}}/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name":"Nguyen Huy Du",
+    "email":"nguyendu@gmail.com",
+    "password":"Nguyendu@@123",
+    "confirmPassword":"Nguyendu@@123"
+}
+
+### SIGN IN
+POST {{baseURL}}/{{urlPath}}/sign-in
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email":"nguyendu@gmail.com",
+    "password":"Nguyendu@@123"
+}
+
+### REFRESH TOKEN
+POST {{baseURL}}/{{urlPath}}/refresh-token
+Content-Type: application/json
+Accept: application/json
+
+### SIGN OUT
+POST {{baseURL}}/{{urlPath}}/sign-out
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+

@@ -1,0 +1,41 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/candidate-educations
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjMxODUyMzcsImV4cCI6MTc2MzI3MTYzNywiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.njUpFl0adjHNLEVPlQ_67BXQCLtzMDxe55Auv0HdpM8
+
+### CREATE CANDIDATE EDUCATION
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "educationName":"ĐH Bách khoa Đà Nẵng",
+    "major":"Kỹ thuật máy tính",
+    "degree":"Cử nhân",
+    "yearStart":2020,
+    "yearEnd":2025
+}
+
+
+### GET MY EDUCATION
+GET {{baseURL}}/{{urlPath}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE EDUCATION BY ID
+PATCH {{baseURL}}/{{urlPath}}/2
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "yearStart": 2021,
+    "yearEnd": 2026
+}
+
+### DELETE EDUCATION BY ID
+DELETE {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

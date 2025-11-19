@@ -1,0 +1,12 @@
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('database', () => ({
+  host: process.env.DATABASE_HOST || 'localhost',
+  port: parseInt(process.env.DATABASE_PORT!) || 3306,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  name: process.env.DATABASE_NAME,
+  synchronize: process.env.DATABASE_SYNC === 'true' ? true : false,
+  autoLoadEntites: process.env.DATABASE_AUTOLOAD === 'true' ? true : false,
+  redisHost: process.env.REDIS_HOST,
+}));

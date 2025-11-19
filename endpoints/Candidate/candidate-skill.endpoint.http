@@ -1,0 +1,19 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/candidate-skills
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjMzNjgwNzAsImV4cCI6MTc2MzQ1NDQ3MCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.8vovUoml_hKFLzEUfDqrqU2HZ9WAkqdzLTvPa0KB0Bo
+
+### CREATE CANDIDATE LANGUAGE
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "skillIds": [1]
+}
+
+### GET MY LANGUAGE
+GET {{baseURL}}/{{urlPath}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

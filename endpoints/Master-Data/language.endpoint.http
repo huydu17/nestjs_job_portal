@@ -1,0 +1,41 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/languages
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjMyMDk4NzcsImV4cCI6MTc2MzI5NjI3NywiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.k4707Lf6eRNtFggeuy6cqzzs1PMghzDytQ6wP3nhSQ0
+
+### CREATE LANGUAGE
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name":"English"
+}
+
+### GET ALL LANGUAGES
+GET {{baseURL}}/{{urlPath}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET LANGUAGE
+GET {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE LANGUAGE BY ID
+PATCH {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name": "French"
+}
+
+### DELETE LANGUAGE BY ID
+DELETE {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

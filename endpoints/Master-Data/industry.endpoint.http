@@ -1,0 +1,41 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/industries
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzQ3OTcwOSwiZXhwIjoxNzYzNTY2MTA5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.k8PKcDb5MxCanfZAKCCAxAyGnAOFxOl46__w-K_XMHo
+
+### CREATE INDUSTRY
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name":"IT"
+}
+
+### GET ALL INDUSTRIES
+GET {{baseURL}}/{{urlPath}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET INDUSTRY
+GET {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE INDUSTRY BY ID
+PATCH {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name": "Information Technology"
+}
+
+### DELETE INDUSTRY BY ID
+DELETE {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

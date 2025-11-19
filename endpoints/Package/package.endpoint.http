@@ -1,0 +1,56 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/packages
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzUyMjY0MCwiZXhwIjoxNzYzNjA5MDQwLCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.JI-EVekF4PqCYma0HwyR9WcMsRnbcUGhddmpFymrNcU
+
+### CREATE PACKAGE
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "label": "Enterprise VIP",
+  "price": 10000000,
+  "jobPostLimit": 100,
+  "isActive": false
+}
+
+### GET ALL PACKAGES
+GET {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET PACKAGES
+GET {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET PACKAGES ACTIVED
+GET {{baseURL}}/{{urlPath}}/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE PACKAGES
+PATCH  {{baseURL}}/{{urlPath}}/2
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isActive": true
+}
+
+### DELTE PACKAGE
+DELETE  {{baseURL}}/{{urlPath}}/2
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+
+
+
+
+

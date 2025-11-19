@@ -1,0 +1,41 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/candidate-experiences
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjMzNzI0MDYsImV4cCI6MTc2MzQ1ODgwNiwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.oDfQdkps_pQAoVjZqvs28Cyz_ud_FudRv3dVD_R9HTU
+
+### CREATE CANDIDATE EXPERIENCE
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "company":"ĐH Bách khoa Đà Nẵng",
+    "department":"IT Department",
+    "startDate":"2026-08-29",
+    "endDate":"2027-12-30",
+    "responsibilities":"Cử nhân"
+}
+
+### GET MY EXPERIENCE
+GET {{baseURL}}/{{urlPath}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE EXPERIENCE BY ID
+PATCH {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "department": "IT 111",
+    "startDate":"2023-08-29",
+    "endDate":"2027-12-30"
+}
+
+### DELETE EXPERIENCE BY ID
+DELETE {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}

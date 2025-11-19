@@ -1,0 +1,75 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/companies
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzQ2NzAxMywiZXhwIjoxNzYzNTUzNDEzLCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.4HxP0D4_DUjJS6PAlphYzA_ZkqZ6tsUKKcwjtb9XKuU
+### CREATE COMPANY
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "name":"Viet",
+    "description":"FPT FPT",
+    "teamSize":1000,
+    "establishmentDate":"2002-09-09",
+    "websiteUrl":"www",
+    "mapLink":"www",
+    "address":"DN",
+    "city":"DN"
+}
+
+### GET ALL COMPANIES
+GET {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET ALL COMPANIES FOR ADMIN
+GET {{baseURL}}/{{urlPath}}/admin
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET MY COMPANY
+GET {{baseURL}}/{{urlPath}}/me?limit=1&page=1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET COMPANY FOR ADMIN BY ID
+GET {{baseURL}}/{{urlPath}}/1/admin
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET COMPANY BY ID
+GET {{baseURL}}/{{urlPath}}/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE COMPANY BY ID
+PATCH {{baseURL}}/{{urlPath}}/6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "mapLink":"wwhahahahahhahw",
+    "address":"jeheheheh"
+}
+
+### APPROVE THE COMPANY
+PATCH {{baseURL}}/{{urlPath}}/6/approve
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### DELTE COMPANY BY ID
+DELETE  {{baseURL}}/{{urlPath}}/6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+
+

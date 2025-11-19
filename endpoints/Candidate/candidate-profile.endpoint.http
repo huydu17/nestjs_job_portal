@@ -1,0 +1,66 @@
+@baseURL = http://localhost:3000
+@urlPath = api/v1/candidate-profiles
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzQ3NjM4OSwiZXhwIjoxNzYzNTYyNzg5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.eFDEimNb9nggllT7Qal0WI55pQIUSJ6x_PBEWtHY-dE
+
+### CREATE CANDIDATE PROFILE
+POST {{baseURL}}/{{urlPath}}/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "fullName": "Nguyen Huy Du",
+    "gender": "Nam",   
+    "phone": "0987654321",
+    "birthdate": "1990-01-01",
+    "address": "123 Le Loi, Da Nang"
+}
+
+### GET ALL PROFILES
+GET {{baseURL}}/{{urlPath}}?page=1&limit=10
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET MY PROFILE
+GET {{baseURL}}/{{urlPath}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### GET PROFILE BY ID
+GET {{baseURL}}/{{urlPath}}/6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### UPDATE PROFILE BY ID
+PUT {{baseURL}}/{{urlPath}}/6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "fullName": "Nguyen Huy Du",
+    "gender": "Nữ",   
+    "phone": "098765432122",
+    "birthdate": "1990-09-01",
+    "address": "123 Le Loi, Ha Noi"
+}
+
+### TOGGLE OPENT TO WORK
+PATCH {{baseURL}}/{{urlPath}}/6/toggle-open-to-work
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "openToWork": true
+}
+
+### DELETE PROFILE
+DELETE {{baseURL}}/{{urlPath}}/me
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
