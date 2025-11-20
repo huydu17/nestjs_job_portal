@@ -1,98 +1,157 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 Job Portal Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> **Mô tả:** Hệ thống Backend RESTful API hoàn chỉnh cho nền tảng tuyển dụng việc làm (Job Portal), kết nối Ứng viên (Candidate) và Nhà tuyển dụng (Recruiter). Hệ thống được xây dựng theo kiến trúc Modular, hỗ trợ phân quyền RBAC, thanh toán online VNPay, quản lý tin đăng theo gói dịch vụ và tối ưu hiệu năng với Redis Caching.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-orange?style=for-the-badge)
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🌟 Tính năng nổi bật
 
-## Project setup
+### 1. Authentication & Authorization 🔐
+* **JWT Authentication:** Sử dụng cơ chế Access Token (ngắn hạn) và Refresh Token (dài hạn) để bảo mật phiên đăng nhập.
+* **RBAC (Role-Based Access Control):** Phân quyền chặt chẽ cho 3 đối tượng:
+    * **Admin:** Quản trị hệ thống, duyệt hồ sơ công ty, quản lý danh mục.
+    * **Recruiter:** Tạo công ty, mua gói dịch vụ, đăng tin, quản lý ứng viên.
+    * **Candidate:** Upload CV, tìm việc, ứng tuyển, quản lý hồ sơ cá nhân.
 
-```bash
-$ npm install
+### 2. Module Ứng Viên (Candidate) 👨‍🎓
+* **CV Builder:** Quản lý hồ sơ chi tiết theo từng module: Học vấn, Kinh nghiệm, Kỹ năng, Ngoại ngữ.
+* **Apply Job:** Ứng tuyển, xem lịch sử và trạng thái hồ sơ.
+
+### 3. Module Nhà Tuyển Dụng (Recruiter) 🏢
+* **Company Profile:** Quản lý thông tin công ty, hình ảnh, ngành nghề.
+* **Approval Flow:** Công ty mới tạo phải chờ Admin duyệt (`isApproved=true`) mới được phép hoạt động.
+* **Job Management:** Đăng tin tuyển dụng với đầy đủ thông tin (Lương, Cấp bậc, Địa điểm, Phúc lợi...).
+
+### 4. Kiếm tiền & Thanh toán (Monetization) 💸
+* **Package System:** Quản lý các gói dịch vụ (Gói tin đăng, Gói xem CV...).
+* **Payment Gateway:** Tích hợp cổng thanh toán **VNPay**.
+* **Automation:** Tự động kích hoạt gói dịch vụ và cộng lượt đăng tin ngay khi thanh toán thành công (xử lý qua IPN & Transaction).
+
+### 5. Tối ưu hiệu năng (Performance) ⚡️
+* **Redis Caching:** Cache các dữ liệu Master Data (Ngành nghề, Kỹ năng, Địa điểm) để giảm tải cho Database.
+* **Soft Delete:** Sử dụng cơ chế xóa mềm để bảo toàn dữ liệu lịch sử.
+* **Transaction:** Đảm bảo tính toàn vẹn dữ liệu cho các nghiệp vụ quan trọng (Thanh toán, Đồng bộ quan hệ nhiều-nhiều).
+
+---
+
+## 🏗 Kiến trúc & Database
+
+Dự án tuân thủ kiến trúc **Modular Monolith** của NestJS.
+
+### Sơ đồ quan hệ thực thể (ERD)
+
+```mermaid
+erDiagram
+    %% USER & AUTH
+    User ||--o{ UserRole : has
+    Role ||--o{ UserRole : assigned_to
+    
+    %% CANDIDATE
+    User ||--|| CandidateProfile : "1-1 (Profile)"
+    CandidateProfile ||--o{ CandidateSkill : has
+    CandidateProfile ||--o{ CandidateEducation : has
+    CandidateProfile ||--o{ CandidateExperience : has
+    CandidateProfile ||--o{ Application : submits
+    
+    %% RECRUITER
+    User ||--o{ Company : owns
+    Company ||--o{ Job : posts
+    Company ||--o{ CompanyImage : gallery
+    
+    %% JOB & APPLICATION
+    Job ||--o{ Application : receives
+    Job ||--o{ JobSkill : requires
+    Job ||--o{ JobBenefit : offers
+    
+    %% PAYMENT & PACKAGE
+    User ||--o{ Order : creates
+    User ||--o{ RecruiterPackage : owns
+    Package ||--o{ Order : defines
+    Package ||--o{ RecruiterPackage : defines
 ```
 
-## Compile and run the project
+---
+## 🛠 Cài đặt & Chạy dự án
+
+### 1. Yêu cầu (Prerequisites)
+
+Trước khi cài đặt, hãy đảm bảo máy của bạn đã cài sẵn các công cụ sau:
+
+* **Node.js**: Phiên bản v16 trở lên.
+* **MySQL**: Cơ sở dữ liệu chính.
+* **Redis**: Dùng để caching dữ liệu.
+* **Tài khoản bên thứ 3**:
+
+  * [Cloudinary](https://cloudinary.com/): Lưu trữ ảnh và PDF.
+  * [VNPay Sandbox](https://sandbox.vnpayment.vn/): Test thanh toán.
+
+---
+
+### 2. Cài đặt dependencies
+
+Mở terminal tại thư mục gốc của dự án và chạy lệnh:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+---
+
+### 3. Chạy dự án
+
+Chế độ phát triển (Development Mode):
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### ⚙️ Cấu hình môi trường (.env)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Tạo một file **.env** tại thư mục gốc và điền các thông tin dưới đây:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```env
+# --- APP CONFIG ---
+PORT=
+
+# --- DATABASE (MySQL) ---
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=your_password
+DB_NAME=job_portal_db
+
+# --- JWT AUTHENTICATION ---
+JWT_SECRET=
+JWT_EXPIRATION=
+JWT_REFRESH_SECRET=
+JWT_REFRESH_EXPIRATION=
+
+# --- REDIS CACHE ---
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# --- CLOUDINARY (Upload Image/PDF) ---
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# --- VNPAY PAYMENT (Sandbox) ---
+VNP_TMN_CODE=your_tmn_code
+VNP_HASH_SECRET=your_hash_secret
+VNP_URL=
+VNP_RETURN_URL=
 ```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 📄 License
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Dự án được phân phối theo giấy phép MIT License.
+Bạn có thể sử dụng, chỉnh sửa và phân phối lại với điều kiện giữ lại thông báo bản quyền.
