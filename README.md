@@ -7,37 +7,56 @@
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![TypeORM](https://img.shields.io/badge/TypeORM-orange?style=for-the-badge)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
 ---
 
 ## 🌟 Tính năng nổi bật
 
 ### 1. Authentication & Authorization 🔐
-* **JWT Authentication:** Sử dụng cơ chế Access Token (ngắn hạn) và Refresh Token (dài hạn) để bảo mật phiên đăng nhập.
-* **RBAC (Role-Based Access Control):** Phân quyền chặt chẽ cho 3 đối tượng:
-    * **Admin:** Quản trị hệ thống, duyệt hồ sơ công ty, quản lý danh mục.
-    * **Recruiter:** Tạo công ty, mua gói dịch vụ, đăng tin, quản lý ứng viên.
-    * **Candidate:** Upload CV, tìm việc, ứng tuyển, quản lý hồ sơ cá nhân.
+* **JWT Authentication:** Sử dụng cơ chế Access Token (ngắn hạn) và Refresh Token (dài hạn).
+* **RBAC (Role-Based Access Control):** Phân quyền chặt chẽ:
+  * **Admin:** Quản trị hệ thống, duyệt hồ sơ công ty.
+  * **Recruiter:** Tạo công ty, mua gói dịch vụ, đăng tin, quản lý ứng viên.
+  * **Candidate:** Upload CV, tìm việc, ứng tuyển, quản lý hồ sơ.
 
 ### 2. Module Ứng Viên (Candidate) 👨‍🎓
-* **CV Builder:** Quản lý hồ sơ chi tiết theo từng module: Học vấn, Kinh nghiệm, Kỹ năng, Ngoại ngữ.
+* **CV Builder:** Quản lý hồ sơ chi tiết (Học vấn, Kinh nghiệm, Kỹ năng, Ngoại ngữ).
 * **Apply Job:** Ứng tuyển, xem lịch sử và trạng thái hồ sơ.
 
 ### 3. Module Nhà Tuyển Dụng (Recruiter) 🏢
 * **Company Profile:** Quản lý thông tin công ty, hình ảnh, ngành nghề.
-* **Approval Flow:** Công ty mới tạo phải chờ Admin duyệt (`isApproved=true`) mới được phép hoạt động.
-* **Job Management:** Đăng tin tuyển dụng với đầy đủ thông tin (Lương, Cấp bậc, Địa điểm, Phúc lợi...).
+* **Approval Flow:** Cơ chế duyệt công ty tự động/thủ công (`isApproved=true`).
+* **Job Management:** Đăng tin tuyển dụng (Lương, Cấp bậc, Địa điểm, Phúc lợi...).
 
 ### 4. Kiếm tiền & Thanh toán (Monetization) 💸
-* **Package System:** Quản lý các gói dịch vụ (Gói tin đăng, Gói xem CV...).
+* **Package System:** Quản lý các gói dịch vụ (Free Trial, Standard, Premium...).
 * **Payment Gateway:** Tích hợp cổng thanh toán **VNPay**.
-* **Automation:** Tự động kích hoạt gói dịch vụ và cộng lượt đăng tin ngay khi thanh toán thành công (xử lý qua IPN & Transaction).
+* **Automation:** Tự động kích hoạt gói và cộng lượt đăng tin qua IPN Webhook.
 
 ### 5. Tối ưu hiệu năng (Performance) ⚡️
-* **Redis Caching:** Cache các dữ liệu Master Data (Ngành nghề, Kỹ năng, Địa điểm) để giảm tải cho Database.
-* **Soft Delete:** Sử dụng cơ chế xóa mềm để bảo toàn dữ liệu lịch sử.
-* **Transaction:** Đảm bảo tính toàn vẹn dữ liệu cho các nghiệp vụ quan trọng (Thanh toán, Đồng bộ quan hệ nhiều-nhiều).
+* **Redis Caching:** Cache dữ liệu Master Data, Job Details để giảm tải Database.
+* **Soft Delete:** Bảo toàn dữ liệu lịch sử quan trọng.
+* **Interceptors:** Tự động chuẩn hóa Response (Serialization) giúp ẩn thông tin nhạy cảm.
 
+---
+
+## 📚 API Documentation (Swagger)
+
+Sau khi chạy dự án, truy cập tài liệu API tương tác tại:
+👉 **[http://localhost:5000/api/docs](http://localhost:5000/api/docs)**
+
+### Tài khoản Test (Demo Accounts)
+
+Hệ thống đã Seed sẵn các tài khoản sau để tiện kiểm thử:
+
+| Role | Email | Password | Quyền hạn |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@jobportal.com` | `Password@123` | Quản trị toàn bộ, duyệt công ty |
+| **Recruiter** | `recruiter@company.com` | `Password@123` | Đăng tin, mua gói, xem CV |
+| **Candidate** | `candidate@gmail.com` | `Password@123` | Tạo hồ sơ, ứng tuyển |
+
+---
 ---
 
 ## 🏗 Kiến trúc & Database
