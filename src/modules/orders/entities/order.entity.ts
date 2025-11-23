@@ -2,7 +2,13 @@ import { User } from '@users/entities/user.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { OrderStatus } from 'src/common/enums/order-status.enum';
 import { Package } from 'src/modules/packages/entities/package.entity';
-import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('orders')
 export class Order extends BaseEntity {
@@ -15,9 +21,6 @@ export class Order extends BaseEntity {
     default: OrderStatus.PENDING,
   })
   status: OrderStatus;
-
-  @Column({ type: 'date' })
-  orderDate: Date;
 
   @Column()
   recruiterId: number;
@@ -33,8 +36,6 @@ export class Order extends BaseEntity {
   @JoinColumn({ name: 'packageId' })
   package: Package;
 
-  @BeforeInsert()
-  setOrderDate() {
-    this.orderDate = new Date();
-  }
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

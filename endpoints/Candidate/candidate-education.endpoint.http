@@ -1,4 +1,4 @@
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000
 @urlPath = api/v1/candidate-educations
 @accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjMxODUyMzcsImV4cCI6MTc2MzI3MTYzNywiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.njUpFl0adjHNLEVPlQ_67BXQCLtzMDxe55Auv0HdpM8
 

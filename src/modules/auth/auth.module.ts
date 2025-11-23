@@ -13,6 +13,9 @@ import { UserModule } from '@users/user.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { UserRolesModule } from '../user-roles/user-roles.module';
 import { RolesModule } from '@roles/roles.module';
+import { PackagesModule } from '../packages/packages.module';
+import { OrdersModule } from '../orders/orders.module';
+import { RecruiterPackagesModule } from '../recruiter-packages/recruiter-packages.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { RolesModule } from '@roles/roles.module';
     RedisModule,
     UserRolesModule,
     RolesModule,
+    PackagesModule,
+    OrdersModule,
+    RecruiterPackagesModule,
   ],
   controllers: [AuthController],
   providers: [

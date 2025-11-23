@@ -26,7 +26,7 @@ export class SerializeInterceptor<T> implements NestInterceptor {
           });
           return {
             ...data,
-            data: transformedData,
+            results: transformedData,
           };
         }
         return plainToInstance(this.dto, data, {

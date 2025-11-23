@@ -5,5 +5,3 @@ export class ApproveCompanyDto {
   @IsNotEmpty()
   isApproved: boolean;
 }
-
-

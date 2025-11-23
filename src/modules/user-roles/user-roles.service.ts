@@ -64,6 +64,7 @@ export class UserRolesService {
         }
       },
     );
+    return this.getUserRoles(data.userId);
   }
 
   async getUserRoles(userId: number) {

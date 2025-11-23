@@ -1,38 +1,4 @@
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  Min,
-  IsInt,
-  IsArray,
-} from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { CreateJobDto } from './create-job.dto';
 
-export class UpdateJobDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  minSalary?: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  maxSalary?: number;
-
-  @IsInt()
-  @IsArray()
-  @IsOptional()
-  skillIds?: number[];
-
-  @IsInt()
-  @IsArray()
-  @IsOptional()
-  benefitIds?: number[];
-}
+export class UpdateJobDto extends PartialType(CreateJobDto) {}

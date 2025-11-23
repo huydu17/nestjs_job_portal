@@ -1,7 +1,14 @@
 import { User } from '@users/entities/user.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Job } from 'src/modules/jobs/entities/job.entity';
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  DeleteDateColumn,
+} from 'typeorm';
 import { CompanyIndustry } from './company-industry.entity';
 import { CompanyImage } from './company-image.entity';
 
@@ -58,4 +65,7 @@ export class Company extends BaseEntity {
 
   @OneToMany(() => Job, (job) => job.company)
   jobs: Job[];
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

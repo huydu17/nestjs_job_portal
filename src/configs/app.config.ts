@@ -8,4 +8,5 @@ export default registerAs('appConfig', () => ({
   vnpUrl: process.env.VNP_URL,
   vnpReturnUrl: process.env.VNP_RETURN_URL,
   vnpIpnUrl: process.env.VNP_IPN_URL,
+  clientUrl: process.env.CLIENT_URL,
 }));

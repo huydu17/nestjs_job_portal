@@ -19,38 +19,39 @@ export class PackagesService {
   async create(createPackageDto: CreatePackageDto): Promise<Package> {
     const formatData = {
       ...createPackageDto,
-      remainremainingPost: createPackageDto.jobPostLimit,
     };
     return await this.packageRepository.save(formatData);
   }
 
   async findAll(query: PaginationQueryDto) {
     const { filter } = query;
-    const whereCondition: any = {};
+    const condition: any = { where: {} };
     if (filter) {
-      whereCondition.where.label = Like(`%${filter}%`);
+      condition.where.label = Like(`%${filter}%`);
     }
     const packages = await this.paginationService.paginateQuery(
       query,
       this.packageRepository,
-      whereCondition,
+      condition,
     );
     return packages;
   }
 
   async findActivePackages(query: PaginationQueryDto) {
     const { filter } = query;
-    const whereCondition: any = {
+    const condition: any = {
       where: { isActive: true },
       order: { price: 'ASC' },
     };
     if (filter) {
-      whereCondition.where.label = Like(`%${filter}%`);
+      condition.where.label = Like(`%${filter}%`);
     }
     const packages = await this.paginationService.paginateQuery(
       query,
       this.packageRepository,
-      whereCondition,
+      condition,
+      'package:active',
+      3600,
     );
     return packages;
   }
@@ -87,5 +88,11 @@ export class PackagesService {
   async remove(id: number): Promise<void> {
     await this.findOne(id);
     await this.packageRepository.delete(id);
+  }
+
+  async findFreeTrialPackage() {
+    return await this.packageRepository.findOne({
+      where: { price: 0, isActive: true },
+    });
   }
 }

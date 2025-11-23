@@ -40,7 +40,7 @@ export class Job extends BaseEntity {
   @Column({
     type: 'enum',
     enum: JobStatus,
-    default: JobStatus.PENDING,
+    default: JobStatus.ACTIVE,
   })
   status: JobStatus;
 

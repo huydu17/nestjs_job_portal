@@ -1,18 +1,16 @@
-import { Type } from 'class-transformer';
+import { Role } from '@roles/enums/role.enum';
 import {
-  IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
-import { PermissionDto } from './permission.dto';
 
 export class CreateRoleDto {
-  @IsString()
   @IsNotEmpty()
-  name: string;
+  @IsEnum(Role)
+  name: Role;
 
   @IsString()
   @IsOptional()
@@ -21,9 +19,4 @@ export class CreateRoleDto {
   @IsBoolean()
   @IsOptional()
   isSystem?: boolean;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PermissionDto)
-  permissions: PermissionDto[];
 }

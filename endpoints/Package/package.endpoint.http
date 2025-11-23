@@ -1,6 +1,6 @@
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000
 @urlPath = api/v1/packages
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzUyMjY0MCwiZXhwIjoxNzYzNjA5MDQwLCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.JI-EVekF4PqCYma0HwyR9WcMsRnbcUGhddmpFymrNcU
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibmd1eWVuZHVAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJyb2xlcyI6W10sImlhdCI6MTc2MzYyMTEyNSwiZXhwIjoxNzYzNzA3NTI1LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.D_ocqUM_W8JtOiWdmixfCpEXvPFw9EROrSvFnHvL1vQ
 
 ### CREATE PACKAGE
 POST {{baseURL}}/{{urlPath}}/
@@ -12,6 +12,7 @@ Authorization: Bearer {{accessToken}}
   "label": "Enterprise VIP",
   "price": 10000000,
   "jobPostLimit": 100,
+  "duration": 30,
   "isActive": false
 }
 
@@ -34,7 +35,7 @@ Accept: application/json
 Authorization: Bearer {{accessToken}}
 
 ### UPDATE PACKAGES
-PATCH  {{baseURL}}/{{urlPath}}/2
+PATCH  {{baseURL}}/{{urlPath}}/1
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{accessToken}}

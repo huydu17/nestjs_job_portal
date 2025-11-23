@@ -6,6 +6,7 @@ import { ApplicationsService } from './applications.service';
 import { JobsModule } from '../jobs/jobs.module';
 import { CandidateProfilesModule } from '../candidate-profiles/candidate-profiles.module';
 import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { CompaniesModule } from '../companies/companies.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PaginationModule } from 'src/common/pagination/pagination.module';
     JobsModule,
     CandidateProfilesModule,
     PaginationModule,
+    CompaniesModule,
   ],
   controllers: [ApplicationsController],
   providers: [ApplicationsService],

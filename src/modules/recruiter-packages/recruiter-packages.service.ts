@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateRecruiterPackageDto } from './dto/create-recruiter-package.dto';
 import { RecruiterPackage } from './entities/recruiter-package.entity';
 import { UserService } from '@users/user.service';
@@ -21,37 +17,54 @@ export class RecruiterPackagesService {
 
   async create(
     createRecruiterPackageDto: CreateRecruiterPackageDto,
-    currentUser: AuthUser,
+    userId: number,
+    manager?: EntityManager,
   ): Promise<RecruiterPackage> {
     const { packageId } = createRecruiterPackageDto;
-    const activeRecruiterPackage = await this.findActivePackage(currentUser.id);
-    if (activeRecruiterPackage) {
-      throw new BadRequestException('You cannot buy this package');
-    }
-
+    const repo = manager
+      ? manager.getRepository(RecruiterPackage)
+      : this.recruiterPackageRepository;
+    const activeRecruiterPackage = await this.findActivePackage(userId);
     const foundPackage =
       await this.packageService.findOneActivePackage(packageId);
-    await this.userService.findById(currentUser.id);
+    await this.userService.findById(userId);
 
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    const durationDays = foundPackage.duration;
-    endDate.setDate(startDate.getDate() + durationDays);
+    if (activeRecruiterPackage) {
+      activeRecruiterPackage.remainingPost += foundPackage.jobPostLimit;
+      const currentEndDate = new Date(activeRecruiterPackage.endDate);
+      const newEndDate = new Date(currentEndDate);
+      newEndDate.setDate(currentEndDate.getDate() + foundPackage.duration);
+      activeRecruiterPackage.endDate = newEndDate;
+      activeRecruiterPackage.packageId = foundPackage.id;
+      const updatedPackage = await repo.save(activeRecruiterPackage);
 
-    const newRecruiterPackage = this.recruiterPackageRepository.create({
-      packageId: foundPackage?.id,
-      recruiterId: currentUser?.id,
-      startDate,
-      endDate,
-      remainingPost: foundPackage.jobPostLimit,
-    });
-    return await this.recruiterPackageRepository.save(newRecruiterPackage);
+      return repo.findOneOrFail({
+        where: { id: updatedPackage.id },
+        relations: ['package'],
+      });
+    } else {
+      const startDate = new Date();
+      const endDate = new Date(startDate);
+      const durationDays = foundPackage.duration;
+      endDate.setDate(startDate.getDate() + durationDays);
+      const newRecruiterPackage = repo.create({
+        packageId: foundPackage?.id,
+        recruiterId: userId,
+        startDate,
+        endDate,
+        remainingPost: foundPackage.jobPostLimit,
+      });
+      const savedPackage = await repo.save(newRecruiterPackage);
+      return repo.findOneOrFail({
+        where: { id: savedPackage.id },
+        relations: ['package'],
+      });
+    }
   }
 
   async findActivePackage(
     recruiterId: number,
   ): Promise<RecruiterPackage | null> {
-    const today = new Date();
     const packages = await this.recruiterPackageRepository.findOne({
       where: {
         recruiterId: recruiterId,
@@ -59,8 +72,7 @@ export class RecruiterPackagesService {
       order: { endDate: 'DESC' },
       relations: ['package'],
     });
-    if (packages && packages.endDate > today) return packages;
-    return null;
+    return packages;
   }
 
   async getMyPackage(recruiterId: number) {
@@ -70,7 +82,6 @@ export class RecruiterPackagesService {
     return pkg;
   }
 
-  // recruiter-packages.service.ts
   async decreaseRemainingPost(id: number) {
     await this.recruiterPackageRepository.decrement({ id }, 'remainingPost', 1);
   }

@@ -1,28 +1,4 @@
-import {
-  IsString,
-  IsNumber,
-  IsBoolean,
-  IsOptional,
-  Min,
-  IsInt,
-} from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { CreatePackageDto } from './create-package.dto';
 
-export class UpdatePackageDto {
-  @IsString()
-  @IsOptional()
-  label?: string;
-
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  price?: number;
-
-  @IsInt()
-  @Min(1)
-  @IsOptional()
-  jobPostLimit?: number;
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
-}
+export class UpdatePackageDto extends PartialType(CreatePackageDto) {}

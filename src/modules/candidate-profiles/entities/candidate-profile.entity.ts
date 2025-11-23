@@ -6,7 +6,14 @@ import { CandidateEducation } from 'src/modules/candidate-educations/entities/ca
 import { CandidateExperience } from 'src/modules/candidate-experiences/entities/candidate-experience.entity';
 import { CandidateLanguage } from 'src/modules/candidate-languages/entities/candidate-language.entity';
 import { CandidateSkill } from 'src/modules/candidate-skills/entities/candidate-skill.entity';
-import { Entity, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('candidate_profiles')
 export class CandidateProfile extends BaseEntity {
@@ -23,14 +30,16 @@ export class CandidateProfile extends BaseEntity {
   phone: string;
 
   @Column({
+    type: 'varchar',
     nullable: true,
   })
-  cvUrl?: string;
+  cvUrl: string | null;
 
   @Column({
+    type: 'varchar',
     nullable: true,
   })
-  cvPublicId?: string;
+  cvPublicId: string | null;
 
   @Column({ type: 'date' })
   birthdate: Date;
@@ -77,4 +86,7 @@ export class CandidateProfile extends BaseEntity {
 
   @OneToMany(() => Application, (apply) => apply.candidateProfile)
   applications: Application[];
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

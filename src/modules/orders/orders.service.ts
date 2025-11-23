@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { Repository, Like, EntityManager } from 'typeorm';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { Order } from './entities/order.entity';
 import { User } from '@users/entities/user.entity';
@@ -23,24 +22,25 @@ export class OrdersService {
     private paginationService: PaginationService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
-    const { packageId, totalPrice } = createOrderDto;
-    await this.packageService.findOneActivePackage(packageId);
+  async create(packageId: number, userId: number) {
+    const packageActice =
+      await this.packageService.findOneActivePackage(packageId);
     await this.userSerivce.findById(userId);
     const order = await this.orderRepository.save({
       recruiterId: userId,
       packageId,
-      totalPrice,
+      totalPrice: packageActice.price,
       status: OrderStatus.PENDING,
     });
-    return order;
+    return this.findOrderWithRelations(order.id);
   }
 
   async getAll(query: PaginationQueryDto) {
     const { filter } = query;
     const condition: any = {
       relations: ['recruiter', 'package'],
-      order: { orderDate: 'DESC' },
+      order: { createdAt: 'DESC' },
+      where: {},
     };
     if (filter) {
       condition.where.package = { label: Like(`%${filter}%`) };
@@ -58,7 +58,7 @@ export class OrdersService {
     const condition: any = {
       where: { recruiterId: currentUser.id },
       relations: ['recruiter', 'package'],
-      order: { orderDate: 'DESC' },
+      order: { createdAt: 'DESC' },
     };
     if (filter) {
       condition.where.package = { label: Like(`%${filter}%`) };
@@ -86,13 +86,15 @@ export class OrdersService {
   async updateStatus(
     id: number,
     updateOrderStatusDto: UpdateOrderStatusDto,
+    manager?: EntityManager,
   ): Promise<Order> {
+    const repo = manager ? manager.getRepository(Order) : this.orderRepository;
     await this.getOne(id);
-    const updatedOrder = await this.orderRepository.save({
+    await repo.save({
       id,
       status: updateOrderStatusDto.status,
     });
-    return updatedOrder;
+    return this.findOrderWithRelations(id);
   }
 
   async remove(id: number, currentUser: User): Promise<void> {
@@ -105,6 +107,17 @@ export class OrdersService {
         `Order not found or you do not have permission to delete it`,
       );
     }
-    await this.orderRepository.delete(id);
+    await this.orderRepository.softDelete(id);
+  }
+
+  private async findOrderWithRelations(id: number): Promise<Order> {
+    const order = await this.orderRepository.findOne({
+      where: { id },
+      relations: ['recruiter', 'package'],
+    });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order;
   }
 }

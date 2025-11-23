@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/await-thenable */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,14 +20,18 @@ import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.d
 import { PaginationService } from 'src/common/pagination/pagination.service';
 import { Role } from '@roles/enums/role.enum';
 import { CompanyIndustriesService } from './providers/company-industries.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class CompaniesService {
+  COMPANY_CACHE_TTL = 3600;
   constructor(
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
     private paginationService: PaginationService,
+    @Inject(forwardRef(() => CompanyIndustriesService))
     private companyIndustryService: CompanyIndustriesService,
+    private redisService: RedisService,
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto, currentUser: AuthUser) {
@@ -30,7 +39,7 @@ export class CompaniesService {
     const uniqueIndustryIds = [...new Set(industryIds)];
     const industryEntities =
       uniqueIndustryIds && uniqueIndustryIds.length > 0
-        ? industryIds.map((id) => ({ industryId: id }))
+        ? uniqueIndustryIds.map((id) => ({ industryId: id }))
         : [];
     const company = await this.companyRepository.create({
       ...createCompanyDto,
@@ -38,75 +47,86 @@ export class CompaniesService {
       userId: currentUser.id,
       companyIndustries: industryEntities,
     });
-    return await this.companyRepository.save(company);
+    await this.companyRepository.save(company);
   }
 
   async findAll(queryDto: PaginationQueryDto) {
     const { filter } = queryDto;
-    const whereCondition: any = {
+    const condition: any = {
       where: { isApproved: true },
-      relations: ['user', 'companyImages', 'companyIndustries'],
+      relations: this.getCompanyRelations(),
     };
     if (filter) {
-      whereCondition.where.name = Like(`%${filter}%`);
+      condition.where.name = Like(`%${filter}%`);
     }
     const companies = await this.paginationService.paginateQuery(
       queryDto,
       this.companyRepository,
-      whereCondition,
+      condition,
     );
     return companies;
   }
 
   async findAllForAdmin(queryDto: PaginationQueryDto) {
     const { filter } = queryDto;
-    const whereCondition: any = {
-      relations: ['user', 'companyImages', 'companyIndustries'],
+    const condition: any = {
+      relations: this.getCompanyRelations(),
+      where: {},
     };
     if (filter) {
-      whereCondition.where.name = Like(`%${filter}%`);
+      condition.where.name = Like(`%${filter}%`);
     }
     const companies = await this.paginationService.paginateQuery(
       queryDto,
       this.companyRepository,
-      whereCondition,
+      condition,
     );
     return companies;
   }
 
   async findMyCompanies(queryDto: PaginationQueryDto, userId: number) {
     const { filter } = queryDto;
-    const whereCondition: any = {
+    const condition: any = {
       where: { userId },
-      relations: ['user', 'companyImages', 'companyIndustries'],
+      relations: this.getCompanyRelations(),
     };
     if (filter) {
-      whereCondition.where.name = Like(`%${filter}%`);
+      condition.where.name = Like(`%${filter}%`);
     }
     const companies = await this.paginationService.paginateQuery(
       queryDto,
       this.companyRepository,
-      whereCondition,
+      condition,
     );
     return companies;
   }
 
   async findOne(id: number): Promise<Company> {
+    const cacheKey = `company:${id}`;
+    const cachedData = await this.redisService.get(cacheKey);
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
     const company = await this.companyRepository.findOne({
       where: { id, isApproved: true },
-      relations: ['user', 'companyImages', 'companyIndustries'],
+      relations: this.getCompanyRelations(),
     });
 
     if (!company) {
       throw new NotFoundException('Cannot find company');
     }
+    await this.redisService.set(
+      cacheKey,
+      JSON.stringify(company),
+      this.COMPANY_CACHE_TTL,
+    );
     return company;
   }
 
   async findOneAdmin(id: number): Promise<Company> {
     const company = await this.companyRepository.findOne({
       where: { id },
-      relations: ['user', 'companyImages', 'companyIndustries'],
+      relations: this.getCompanyRelations(),
     });
     if (!company) {
       throw new NotFoundException(`Cannot find company with id: ${id}`);
@@ -136,7 +156,9 @@ export class CompaniesService {
         updateCompanyDto.industryIds,
       );
     }
-    return await this.companyRepository.save(company);
+    await this.redisService.del(`company:${id}`);
+    await this.companyRepository.save(company);
+    return this.findOneAdmin(id);
   }
 
   async approved(
@@ -144,11 +166,12 @@ export class CompaniesService {
     approveCompanyDto: ApproveCompanyDto,
   ): Promise<Company> {
     await this.findOneAdmin(id);
-    const company = await this.companyRepository.save({
+    await this.companyRepository.save({
       id,
       isApproved: approveCompanyDto.isApproved,
     });
-    return company;
+    await this.redisService.del(`company:${id}`);
+    return this.findOneAdmin(id);
   }
 
   async remove(id: number, currentUser: AuthUser): Promise<void> {
@@ -156,9 +179,10 @@ export class CompaniesService {
     const isAdmin = currentUser.roles.includes(Role.ADMIN);
     const isOwner = company.userId === currentUser.id;
     if (isAdmin || isOwner) {
-      await this.companyRepository.delete(id);
+      await this.companyRepository.softDelete(id);
       return;
     }
+    await this.redisService.del(`company:${id}`);
     throw new ForbiddenException(
       'You do not have permission to delete this record',
     );
@@ -188,5 +212,13 @@ export class CompaniesService {
       );
     }
     return company;
+  }
+  private getCompanyRelations() {
+    return [
+      'user',
+      'companyImages',
+      'companyIndustries',
+      'companyIndustries.industry',
+    ];
   }
 }

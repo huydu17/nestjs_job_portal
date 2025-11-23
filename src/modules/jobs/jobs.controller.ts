@@ -7,23 +7,41 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { UpdateJobStatusDto } from './dto/update-job-status.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { JobsService } from './jobs.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination-query.dto';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Role } from '@roles/enums/role.enum';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
+import { JobResponseDto } from './dto/job-response.dto';
+import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 
+@ApiTags('Jobs')
 @Controller('jobs')
-@UseGuards(JwtAuthGuard)
 export class JobsController {
   constructor(private readonly jobService: JobsService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @Roles(Role.RECRUITER)
+  @Serialize(JobResponseDto)
+  @ApiOperation({ summary: 'Create a new job posting' })
+  @ResponseMessage('Job created successfully')
+  @ApiResponse({ status: 201, description: 'Job created.' })
+  @ApiResponse({ status: 400, description: 'Limit reached or Invalid data.' })
   async create(
     @Body() createJobDto: CreateJobDto,
     @CurrentUser() currentUser: AuthUser,
@@ -32,11 +50,20 @@ export class JobsController {
   }
 
   @Get()
+  @Public()
+  @Serialize(JobResponseDto)
+  @ApiOperation({ summary: 'Search and Filter jobs (Public)' })
+  @ApiResponse({ status: 200, description: 'List of jobs.' })
   async findAll(@Query() query: PaginationQueryDto) {
     return await this.jobService.findAll(query);
   }
 
   @Get('recruiter')
+  @ApiBearerAuth()
+  @Serialize(JobResponseDto)
+  @Roles(Role.RECRUITER)
+  @ApiOperation({ summary: 'Get jobs posted by me (Recruiter)' })
+  @ApiResponse({ status: 200, description: 'List of my jobs.' })
   async findAllForRecruiter(
     @Query() query: PaginationQueryDto,
     @CurrentUser() currentUser: AuthUser,
@@ -45,11 +72,24 @@ export class JobsController {
   }
 
   @Get(':id')
+  @Public()
+  @Serialize(JobResponseDto)
+  @ApiOperation({ summary: 'Get job details' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ApiResponse({ status: 200, description: 'Job details.' })
+  @ApiResponse({ status: 404, description: 'Job not found.' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.jobService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @Roles(Role.RECRUITER)
+  @Serialize(JobResponseDto)
+  @ApiOperation({ summary: 'Update job information' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ResponseMessage('Job updated successfully')
+  @ApiResponse({ status: 200, description: 'Job updated.' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateJobDto: UpdateJobDto,
@@ -59,6 +99,12 @@ export class JobsController {
   }
 
   @Patch(':id/status')
+  @ApiBearerAuth()
+  @Roles(Role.RECRUITER)
+  @Serialize(JobResponseDto)
+  @ApiOperation({ summary: 'Update job status (Open/Close/Fill)' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ResponseMessage('Job status updated successfully')
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateJobStatusDto: UpdateJobStatusDto,
@@ -72,6 +118,11 @@ export class JobsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @Roles(Role.RECRUITER, Role.ADMIN)
+  @ApiOperation({ summary: 'Delete a job' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ResponseMessage('Job deleted successfully')
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: AuthUser,

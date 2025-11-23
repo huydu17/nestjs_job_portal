@@ -1,6 +1,7 @@
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000
 @urlPath = api/v1/user-roles
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjI1ODQ2ODQsImV4cCI6MTc2MjU4NTU4NCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.rA08zi-NTm-msztHy0zUtKBiy15v0dCac34LKNgTNM0
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibmd1eWVuZHVAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJyb2xlcyI6W10sImlhdCI6MTc2MzY5NTcwOSwiZXhwIjoxNzYzNzgyMTA5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.Hc5gKRxViL7EfUyShRf2WcCH3Vl12Hvqx4gh_XjEfy8
+
 ### Assign Role To User
 POST {{baseURL}}/{{urlPath}}/
 Content-Type: application/json
@@ -8,8 +9,8 @@ Accept: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "userId": 6,
-  "roleIds": [4,5,6]
+  "userId": 4,
+  "roleIds": [3]
 }
 
 ### Get all roles by User ID

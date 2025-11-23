@@ -1,9 +1,9 @@
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000
 @urlPath = api/v1/skills
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEzLCJlbWFpbCI6Im5ndXllbmR1QGdtYWlsLmNvbSIsIm5hbWUiOiJOZ3V5ZW4gSHV5IER1Iiwicm9sZXMiOlsiQ0FORElEQVRFIl0sImlhdCI6MTc2MzQ3NjM4OSwiZXhwIjoxNzYzNTYyNzg5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.eFDEimNb9nggllT7Qal0WI55pQIUSJ6x_PBEWtHY-dE
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuZHUxMUBnbWFpbC5jb20iLCJuYW1lIjoiTmd1eWVuIEh1eSBEdSIsInJvbGVzIjpbInJlY3J1aXRlciJdLCJpYXQiOjE3NjM2OTc5NTIsImV4cCI6MTc2Mzc4NDM1MiwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9._BZPQyGvg_zaa55vc42lE2zVs5Hx3kroxyDQ-T6M-2E
 
 ### CREATE SKILL
-POST {{baseURL}}/{{urlPath}}/
+POST {{baseURL}}/{{urlPath}}
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{accessToken}}

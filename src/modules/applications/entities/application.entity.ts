@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity('applications')
@@ -39,4 +40,7 @@ export class Application {
   @ManyToOne(() => Job, (job) => job.applications)
   @JoinColumn({ name: 'jobId' })
   job: Job;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

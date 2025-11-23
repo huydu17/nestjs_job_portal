@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
@@ -14,6 +15,7 @@ import { JobsService } from '../jobs/jobs.service';
 import { CandidateProfilesService } from '../candidate-profiles/candidate-profiles.service';
 import { PaginationService } from 'src/common/pagination/pagination.service';
 import { CompaniesService } from '../companies/companies.service';
+import { Role } from '@roles/enums/role.enum';
 
 @Injectable()
 export class ApplicationsService {
@@ -28,11 +30,13 @@ export class ApplicationsService {
 
   async create(
     createApplicationDto: CreateApplicationDto,
-    userId: number,
+    currentUser: AuthUser,
   ): Promise<Application> {
     const { jobId } = createApplicationDto;
     await this.jobService.findOneActive(jobId);
-    const candidate = await this.candidateProfileSerice.findOneByUserId(userId);
+    const candidate = await this.candidateProfileSerice.findOneByUserId(
+      currentUser.id,
+    );
     const existingApply = await this.applyRepository.findOne({
       where: {
         candidateProfileId: candidate.id,
@@ -42,12 +46,12 @@ export class ApplicationsService {
     if (existingApply) {
       throw new BadRequestException('You have already applied for this job');
     }
-    const apply = await this.applyRepository.save({
+    await this.applyRepository.save({
       candidateProfileId: candidate.id,
       jobId,
     });
     await this.jobService.increaseTotalApplications(jobId);
-    return apply;
+    return this.findApplicationWithDetails(candidate.id, jobId);
   }
 
   async findAllForCandidate(query: PaginationQueryDto, userId: number) {
@@ -77,7 +81,7 @@ export class ApplicationsService {
       where: {
         job: { companyId: company.id },
       },
-      relations: ['job', 'candidateProfile'],
+      relations: ['job', 'candidateProfile', 'candidateProfile.user'],
       order: { applyDate: 'DESC' },
     };
     if (filter) {
@@ -94,13 +98,26 @@ export class ApplicationsService {
   async findOne(
     candidateProfileId: number,
     jobId: number,
+    currentUser: AuthUser,
   ): Promise<Application> {
     const apply = await this.applyRepository.findOne({
       where: { candidateProfileId, jobId },
-      relations: ['job', 'job.company', 'candidateProfile'],
+      relations: ['job', 'candidateProfile', 'candidateProfile.user'],
     });
-    if (!apply) {
-      throw new NotFoundException('Application not found');
+
+    if (!apply) throw new NotFoundException('Application not found');
+    if (currentUser.roles.includes(Role.CANDIDATE)) {
+      if (apply.candidateProfile.userId !== currentUser.id) {
+        throw new ForbiddenException(
+          "You are not allowed to view other people's applications.",
+        );
+      }
+    }
+    if (currentUser.roles.includes(Role.RECRUITER)) {
+      await this.companyService.findOneEnsureOwner(
+        apply.job.companyId,
+        currentUser.id,
+      );
     }
     return apply;
   }
@@ -119,11 +136,31 @@ export class ApplicationsService {
       throw new NotFoundException('Application not found');
     }
     await this.companyService.findOneEnsureOwner(apply.job.companyId, userId);
-    const updatedApply = await this.applyRepository.save({
+    await this.applyRepository.save({
       candidateProfileId,
       jobId,
       status: updateApplyStatusDto.status,
     });
-    return updatedApply;
+    return this.findApplicationWithDetails(candidateProfileId, jobId);
+  }
+
+  private async findApplicationWithDetails(
+    candidateProfileId: number,
+    jobId: number,
+  ): Promise<Application> {
+    const application = await this.applyRepository.findOne({
+      where: { candidateProfileId, jobId },
+      relations: [
+        'job',
+        'job.company',
+        'job.company.companyImages',
+        'candidateProfile',
+        'candidateProfile.user',
+      ],
+    });
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+    return application;
   }
 }

@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { CompanyIndustry } from 'src/modules/company-industries/entities/company-industry.entity';
+import { CompanyIndustry } from 'src/modules/companies/entities/company-industry.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('industries')

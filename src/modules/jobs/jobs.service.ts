@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Injectable,
@@ -19,6 +22,7 @@ import { BenefitsService } from '../benefits/benefits.service';
 import { SkillsService } from '../skills/skills.service';
 import { JobSkill } from './entities/job-skill.entity';
 import { JobBenefit } from './entities/job-benefit.entity';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class JobsService {
@@ -30,6 +34,7 @@ export class JobsService {
     private paginationService: PaginationService,
     private benefitService: BenefitsService,
     private skillService: SkillsService,
+    private redisService: RedisService,
   ) {}
 
   async create(createJobDto: CreateJobDto, userId: number): Promise<Job> {
@@ -52,23 +57,24 @@ export class JobsService {
       ...createJobDto,
       companyId: company.id,
       postById: userId,
-      skillIds: uniqueSkills.map((s) => ({ skillId: s })),
-      benefitIds: uniqueBenefits.map((b) => ({ benefitId: b })),
+      jobSkills: uniqueSkills.map((s) => ({ skillId: s })),
+      jobBenefits: uniqueBenefits.map((b) => ({ benefitId: b })),
     });
     await this.recruiterPackageService.decreaseRemainingPost(
       recruiterPackages.id,
     );
-    return job;
+    return this.findOne(job.id);
   }
 
   async findAll(query: PaginationQueryDto) {
     const { filter } = query;
     const condition: any = {
       order: { createdAt: 'DESC' },
-      relations: ['company', 'postBy', 'jobRole'],
+      relations: this.getJobRelations(),
+      where: {},
     };
     if (filter) {
-      condition.title.title = Like(`%${filter}%`);
+      condition.where.title = Like(`%${filter}%`);
     }
     const jobs = await this.paginationService.paginateQuery(
       query,
@@ -83,10 +89,10 @@ export class JobsService {
     const condition: any = {
       where: { postById: userId },
       order: { createdAt: 'DESC' },
-      relations: ['company', 'postBy'],
+      relations: this.getJobRelations(),
     };
     if (filter) {
-      condition.title.title = Like(`%${filter}%`);
+      condition.where.title = Like(`%${filter}%`);
     }
     const jobs = await this.paginationService.paginateQuery(
       query,
@@ -97,14 +103,20 @@ export class JobsService {
   }
 
   async findOne(id: number): Promise<Job> {
+    const key = this.getCacheKey(id);
+    const cachedJob = await this.redisService.get(key);
+    if (cachedJob) {
+      return JSON.parse(cachedJob);
+    }
     const job = await this.jobRepository.findOne({
       where: { id },
-      relations: ['company', 'postBy'],
+      relations: this.getJobRelations(),
     });
 
     if (!job) {
       throw new NotFoundException(`Cannot find job: ${id}`);
     }
+    await this.redisService.set(key, JSON.stringify(job), 3600);
     return job;
   }
 
@@ -135,7 +147,7 @@ export class JobsService {
         }
         if (uniqueBenefits.length > 0) {
           await transactionalEntityManager.delete(JobBenefit, { jobId: id });
-          const newJobBenefits = uniqueSkills.map((benefitId) =>
+          const newJobBenefits = uniqueBenefits.map((benefitId) =>
             transactionalEntityManager.create(JobBenefit, {
               jobId: id,
               benefitId,
@@ -145,6 +157,7 @@ export class JobsService {
         }
       },
     );
+    await this.redisService.del(this.getCacheKey(id));
     return this.findOne(id);
   }
 
@@ -156,12 +169,14 @@ export class JobsService {
     const job = await this.findOne(id);
     await this.companyService.findOneEnsureOwner(job.companyId, userId);
     job.status = updateJobStatusDto.status;
+    await this.redisService.del(this.getCacheKey(id));
     return await this.jobRepository.save(job);
   }
 
   async remove(id: number, userId: number): Promise<void> {
     const job = await this.findOne(id);
     await this.companyService.findOneEnsureOwner(job.companyId, userId);
+    await this.redisService.del(this.getCacheKey(id));
     await this.jobRepository.softDelete(id);
   }
 
@@ -206,7 +221,25 @@ export class JobsService {
       throw new BadRequestException('One or more benefit dont exist');
     }
   }
+
   async increaseTotalApplications(id: number) {
     await this.jobRepository.increment({ id }, 'totalApplications', 1);
+    await this.redisService.del(this.getCacheKey(id));
+  }
+
+  private getCacheKey(id: number): string {
+    return `job:${id}`;
+  }
+
+  private getJobRelations() {
+    return [
+      'company',
+      'company.companyImages',
+      'postBy',
+      'jobSkills',
+      'jobSkills.skill',
+      'jobBenefits',
+      'jobBenefits.benefit',
+    ];
   }
 }

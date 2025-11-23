@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   ForbiddenException,
   Injectable,
@@ -7,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '@users/entities/user.entity';
 import { CompanyImage } from '../entities/company-image.entity';
 import { CompaniesService } from '../companies.service';
 import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from 'src/modules/cloudinary/cloudinary.response';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class CompanyImagesService {
@@ -20,6 +19,7 @@ export class CompanyImagesService {
     private companyImageRepository: Repository<CompanyImage>,
     private companyService: CompaniesService,
     private cloudinaryService: CloudinaryService,
+    private redisService: RedisService,
   ) {}
 
   async add(
@@ -39,6 +39,7 @@ export class CompanyImagesService {
         public_id: result.public_id,
       });
     });
+    await this.redisService.del(`company:${companyId}`);
     return await this.companyImageRepository.save(newImages);
   }
 
@@ -60,6 +61,7 @@ export class CompanyImagesService {
     if (image.public_id) {
       await this.cloudinaryService.remove(image.public_id);
     }
+    await this.redisService.del(`company:${image.companyId}`);
     return await this.companyImageRepository.remove(image);
   }
 }

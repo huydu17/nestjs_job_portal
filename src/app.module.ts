@@ -11,7 +11,6 @@ import { AuthModule } from '@auth/auth.module';
 import { RolesModule } from '@roles/roles.module';
 import { User } from '@users/entities/user.entity';
 import { Role } from '@roles/entities/role.entity';
-import { Permission } from '@roles/entities/permission.entity';
 import { Application } from './modules/applications/entities/application.entity';
 import { CandidateEducation } from './modules/candidate-educations/entities/candidate-education.entity';
 import { CandidateProfile } from './modules/candidate-profiles/entities/candidate-profile.entity';
@@ -47,6 +46,13 @@ import { Skill } from './modules/skills/entities/skill.entity';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { JobBenefit } from './modules/jobs/entities/job-benefit.entity';
 import { JobSkill } from './modules/jobs/entities/job-skill.entity';
+import { PaymentModule } from './modules/payment/payment.module';
+import { CompanyImage } from './modules/companies/entities/company-image.entity';
+import { CompanyIndustry } from './modules/companies/entities/company-industry.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './common/guards/role.guard';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { ApplicationsModule } from './modules/applications/applications.module';
 
 const ENV = process.env.NODE_ENV;
 @Module({
@@ -70,7 +76,6 @@ const ENV = process.env.NODE_ENV;
           User,
           Role,
           UserRole,
-          Permission,
           Application,
           CandidateEducation,
           CandidateProfile,
@@ -78,6 +83,8 @@ const ENV = process.env.NODE_ENV;
           CandidateLanguage,
           CandidateSkill,
           Company,
+          CompanyImage,
+          CompanyIndustry,
           Job,
           JobBenefit,
           JobSkill,
@@ -114,8 +121,20 @@ const ENV = process.env.NODE_ENV;
     IndustriesModule,
     SkillsModule,
     CloudinaryModule,
+    PaymentModule,
+    ApplicationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   Injectable,
@@ -8,12 +10,15 @@ import { In, Repository } from 'typeorm';
 import { Skill } from './entities/skill.entity';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class SkillsService {
+  private readonly CACHE_KEY = 'skills';
   constructor(
     @InjectRepository(Skill)
     private readonly skillRepository: Repository<Skill>,
+    private redisService: RedisService,
   ) {}
 
   async create(createSkillDto: CreateSkillDto) {
@@ -26,11 +31,18 @@ export class SkillsService {
     }
     const skill = new Skill();
     Object.assign(skill, createSkillDto);
+    await this.redisService.del(this.CACHE_KEY);
     return this.skillRepository.save(skill);
   }
 
-  findAll() {
-    return this.skillRepository.find();
+  async findAll() {
+    const cachedData = await this.redisService.get(this.CACHE_KEY);
+    if (cachedData) {
+      return JSON.parse(cachedData as string);
+    }
+    const skills = await this.skillRepository.find();
+    await this.redisService.set(this.CACHE_KEY, JSON.stringify(skills), 86400);
+    return skills;
   }
 
   async findOne(skillId: number) {
@@ -46,11 +58,13 @@ export class SkillsService {
   async update(skillId: number, updateSkilleDto: UpdateSkillDto) {
     const skill = await this.findOne(skillId);
     Object.assign(skill, updateSkilleDto);
+    await this.redisService.del(this.CACHE_KEY);
     return this.skillRepository.save(skill);
   }
 
   async remove(skillId: number) {
     await this.findOne(skillId);
+    await this.redisService.del(this.CACHE_KEY);
     await this.skillRepository.delete(skillId);
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { UserPayload } from '@auth/interfaces/user-payload.interface';
 import { Inject, Injectable } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
@@ -38,5 +39,9 @@ export class GenerateTokensProvider {
   }
   public async generateRefreshToken(userId: number): Promise<string> {
     return await this.signToken(userId, this.jwtConfiguration.refreshTokenTtl);
+  }
+
+  public decodeJwt(token: string) {
+    return this.jwtService.decode(token) as { exp: number };
   }
 }

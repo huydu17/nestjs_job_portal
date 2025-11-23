@@ -1,6 +1,6 @@
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:5000
 @urlPath = api/v1/roles
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImVtYWlsIjoibmd1eWVuaHV5ZHU0MzJAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJpYXQiOjE3NjI1ODI5MTksImV4cCI6MTc2MjU4MzgxOSwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.tMaKaM5oN02-D6AYqzFul_n-JecHuQOHQZL4OMrvnCo
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibmd1eWVuZHVAZ21haWwuY29tIiwibmFtZSI6Ik5ndXllbiBIdXkgRHUiLCJyb2xlcyI6W10sImlhdCI6MTc2MzY5NTcwOSwiZXhwIjoxNzYzNzgyMTA5LCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.Hc5gKRxViL7EfUyShRf2WcCH3Vl12Hvqx4gh_XjEfy8
 
 ### CREATE ROLE
 POST {{baseURL}}/{{urlPath}}/
@@ -9,19 +9,9 @@ Accept: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "name": "CANDIDATE",
-  "description": "Người tuyển dụng",
-  "isSystem": true,
-  "permissions": [
-    {
-      "resource": "roles",
-      "actions": ["read", "update", "delete", "create"]
-    },
-    {
-      "resource": "users",
-      "actions": ["read", "update"]
-    }
-  ]
+  "name": "admin",
+  "description": "Quản trị viên",
+  "isSystem": true
 }
 
 ### GET ALL ROLES
@@ -44,21 +34,11 @@ Authorization: Bearer {{accessToken}}
 
 {
   "name": "ADMIN",
-  "description": "Quản trị viên hệ thống",
-  "permissions": [
-    {
-      "resource": "roles",
-      "actions": ["read", "update", "delete", "create", "delete" ]
-    },
-    {
-      "resource": "users",
-      "actions": ["read", "update", "create"]
-    }
-  ]
+  "description": "Quản trị viên hệ thống"
 }
 
 ### DELETE ROLE
-DELETE {{baseURL}}/{{urlPath}}/4
+DELETE {{baseURL}}/{{urlPath}}/2
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{accessToken}}
